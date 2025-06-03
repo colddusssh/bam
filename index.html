@@ -2,34 +2,59 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Mini App</title>
+    <title>Debug Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         textarea { width: 100%; min-height: 100px; margin: 10px 0; }
         button { background: #0088cc; color: white; border: none; padding: 10px 20px; }
+        #debug { margin-top: 20px; color: #666; }
     </style>
 </head>
 <body>
-    <h2>✏️ Введите текст</h2>
-    <textarea id="userText" placeholder="Ваш текст tuta..."></textarea>
-    <button onclick="sendData()">Отправить</button>
+    <h2>✏️ Тестовое Mini App</h2>
+    <textarea id="userText" placeholder="Введите любой текст..."></textarea>
+    <button onclick="sendData()">Отправить в бота</button>
+    
+    <div id="debug">
+        <h3>Отладочная информация:</h3>
+        <p id="status">Статус: готов к отправке</p>
+    </div>
 
     <script>
         const tg = Telegram.WebApp;
+        const statusElement = document.getElementById("status");
+        
+        // Инициализация
         tg.expand();
+        tg.enableClosingConfirmation();
+        console.log("Mini App инициализирована");
+        statusElement.textContent = "Статус: приложение готово";
         
         function sendData() {
             const text = document.getElementById("userText").value.trim();
             if (!text) {
-                alert("Введите текст!");
+                statusElement.textContent = "Ошибка: текст пустой!";
+                alert("Введите текст перед отправкой!");
                 return;
             }
             
-            console.log("[Mini App] Отправка:", text);
-            tg.sendData(text);
-            tg.showAlert("Данные отправлены!");
-
+            statusElement.textContent = "Отправка данных...";
+            console.log("Попытка отправки:", text);
+            
+            try {
+                tg.sendData(text);
+                statusElement.textContent = "Данные отправлены успешно!";
+                console.log("Данные отправлены:", text);
+                
+                tg.showAlert("Данные получены ботом!");
+                setTimeout(() => {
+                    tg.close();
+                }, 1000);
+            } catch (e) {
+                statusElement.textContent = "Ошибка отправки: " + e;
+                console.error("Ошибка:", e);
+            }
         }
     </script>
 </body>
