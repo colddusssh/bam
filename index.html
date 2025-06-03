@@ -5,54 +5,31 @@
     <title>Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            text-align: center;
-        }
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            min-height: 100px;
-        }
-        button {
-            padding: 10px 20px;
-            background: #0088cc;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        textarea { width: 100%; min-height: 100px; margin: 10px 0; }
+        button { background: #0088cc; color: white; border: none; padding: 10px 20px; }
     </style>
 </head>
 <body>
-    <h1>✏️ Новая ZAMETKA</h1>
-    <textarea id="note-text" placeholder="Введите текст..."></textarea>
-    <button onclick="sendData()">Сохранить</button>
+    <h2>✏️ Введите текст</h2>
+    <textarea id="userText" placeholder="Ваш текст здесь..."></textarea>
+    <button onclick="sendData()">Отправить</button>
 
     <script>
         const tg = Telegram.WebApp;
-        
-        // Инициализация
         tg.expand();
-        tg.enableClosingConfirmation();  // Подтверждение перед закрытием
         
         function sendData() {
-            const text = document.getElementById("note-text").value.trim();
+            const text = document.getElementById("userText").value.trim();
             if (!text) {
-                alert("Введите текст перед отправкой!");
+                alert("Введите текст!");
                 return;
             }
             
+            console.log("[Mini App] Отправка:", text);
             tg.sendData(text);
-            
-            // Закрываем только после успешной отправки
-            setTimeout(() => {
-                tg.close();
-            }, 300);  // Даём время на отправку
+            tg.showAlert("Данные отправлены!");
+            setTimeout(() => tg.close(), 300);
         }
     </script>
 </body>
