@@ -12,7 +12,7 @@
 </head>
 <body>
     <h2>✏️ Введите текст</h2>
-    <textarea id="userText" placeholder="Ваш текст здесь..."></textarea>
+    <textarea id="userText" placeholder="Ваш текст tuta..."></textarea>
     <button onclick="sendData()">Отправить</button>
 
     <script>
@@ -29,7 +29,7 @@
             console.log("[Mini App] Отправка:", text);
             tg.sendData(text);
             tg.showAlert("Данные отправлены!");
-            setTimeout(() => tg.close(), 300);
+
         }
     </script>
 </body>

@@ -1,9 +1,11 @@
+from config import BOT_TOKEN
+
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import MenuButtonWebApp, WebAppInfo
 import asyncio
 
-bot = Bot(token="YOUR_BOT_TOKEN")  # Замените на реальный токен!
+bot = Bot(token=BOT_TOKEN)  # Замените на реальный токен!
 dp = Dispatcher()
 
 @dp.message(Command("start"))
@@ -13,7 +15,7 @@ async def start(message: types.Message):
             chat_id=message.chat.id,
             menu_button=MenuButtonWebApp(
                 text="📝 Открыть Mini App",
-                web_app=WebAppInfo(url="https://your-vercel-app.vercel.app")  # Ваш URL
+                web_app=WebAppInfo(url="https://colddusssh.github.io/bam/")  # Ваш URL
             )
         )
         await message.answer("Нажмите кнопку меню, чтобы открыть Mini App!")
@@ -38,4 +40,5 @@ async def main():
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
+    print("gogogogo")
     asyncio.run(main())
