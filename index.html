@@ -1,51 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background: #f3f4f6;
-        }
-        button {
-            padding: 10px 20px;
-            background: #0088cc;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+        button { padding: 10px 15px; background: #0088cc; color: white; border: none; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <h1>Hello, <span id="user-name">User</span>! 👋</h1>
-    <p>This is a simple Telegram Mini App.</p>
-    <button onclick="sendData()">Send Data to Bot</button>
+    <h1>Mini App Demo</h1>
+    <p>Нажмите кнопку, чтобы отправить данные боту:</p>
+    <button onclick="sendData()">Отправить</button>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();  // Разворачиваем на весь экран
+        const tg = Telegram.WebApp;
+        tg.expand();  // Развернуть на весь экран
 
-        // Показываем имя пользователя
-        const user = tg.initDataUnsafe.user;
-        if (user) {
-            document.getElementById("user-name").textContent = user.first_name;
-        }
-
-        // Отправляем данные боту и закрываем Mini App
         function sendData() {
             const data = {
-                action: "button_click",
-                user_id: user?.id,
-                time: new Date().toLocaleTimeString(),
+                action: "test",
+                value: "Hello from Mini App!",
+                user: tg.initDataUnsafe.user?.first_name || "Anonymous"
             };
-            tg.sendData(JSON.stringify(data));
-            tg.close();
+            tg.sendData(JSON.stringify(data));  // Отправляем данные боту
+            tg.close();  // Закрываем Mini App
         }
     </script>
 </body>
