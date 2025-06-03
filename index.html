@@ -2,29 +2,47 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Telegram Mini App</title>
+    <title>Сохранить текст</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
-        button { padding: 10px 15px; background: #0088cc; color: white; border: none; border-radius: 5px; }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <h1>Mini App Demo</h1>
-    <p>Нажмите кнопку, чтобы отправить данные боту:</p>
-    <button onclick="sendData()">Отправить</button>
+    <h1>✏️ Новая заметка</h1>
+    <textarea id="user-text" rows="5" placeholder="Введите текст..."></textarea>
+    <button onclick="sendText()">Сохранить</button>
 
     <script>
         const tg = Telegram.WebApp;
         tg.expand();  // Развернуть на весь экран
 
-        function sendData() {
-            const data = {
-                action: "test",
-                value: "Hello from Mini App!",
-                user: tg.initDataUnsafe.user?.first_name || "Anonymous"
-            };
-            tg.sendData(JSON.stringify(data));  // Отправляем данные боту
+        function sendText() {
+            const text = document.getElementById("user-text").value.trim();
+            if (!text) {
+                alert("Введите текст!");
+                return;
+            }
+            tg.sendData(text);  // Отправляем текст боту
             tg.close();  // Закрываем Mini App
         }
     </script>

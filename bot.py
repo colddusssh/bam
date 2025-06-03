@@ -32,7 +32,7 @@ async def start(message: types.Message):
         chat_id=message.chat.id,
         menu_button=MenuButtonWebApp(
             text="Open Mini App",
-            web_app=WebAppInfo(url="https://ваш-хостинг.vercel.app")  # Замените на ваш URL
+            web_app=WebAppInfo(url="https://colddusssh.github.io/bam/")  # Замените на ваш URL
         )
     )
     await message.answer("Нажмите кнопку ниже, чтобы открыть Mini App!")
