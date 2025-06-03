@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Сохранить текст</title>
+    <title>Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -13,12 +13,13 @@
         textarea {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
+            margin: 10px 0;
+            border: 1px solid #ccc;
             border-radius: 5px;
+            min-height: 100px;
         }
         button {
-            padding: 10px 15px;
+            padding: 10px 20px;
             background: #0088cc;
             color: white;
             border: none;
@@ -28,22 +29,30 @@
     </style>
 </head>
 <body>
-    <h1>✏️ Новая заметка</h1>
-    <textarea id="user-text" rows="5" placeholder="Введите текст..."></textarea>
-    <button onclick="sendText()">Сохранить</button>
+    <h1>✏️ Новая ZAMETKA</h1>
+    <textarea id="note-text" placeholder="Введите текст..."></textarea>
+    <button onclick="sendData()">Сохранить</button>
 
     <script>
         const tg = Telegram.WebApp;
-        tg.expand();  // Развернуть на весь экран
-
-        function sendText() {
-            const text = document.getElementById("user-text").value.trim();
+        
+        // Инициализация
+        tg.expand();
+        tg.enableClosingConfirmation();  // Подтверждение перед закрытием
+        
+        function sendData() {
+            const text = document.getElementById("note-text").value.trim();
             if (!text) {
-                alert("Введите текст!");
+                alert("Введите текст перед отправкой!");
                 return;
             }
-            tg.sendData(text);  // Отправляем текст боту
-            tg.close();  // Закрываем Mini App
+            
+            tg.sendData(text);
+            
+            // Закрываем только после успешной отправки
+            setTimeout(() => {
+                tg.close();
+            }, 300);  // Даём время на отправку
         }
     </script>
 </body>

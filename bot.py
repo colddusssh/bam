@@ -4,58 +4,85 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import MenuButtonWebApp, WebAppInfo
 import sqlite3
-import json
 import asyncio
 
 # Настройка бота
-bot = Bot(token= BOT_TOKEN)
+bot = Bot(token =BOT_TOKEN)  # Замените на реальный токен!
 dp = Dispatcher()
 
-# Создаем БД SQLite
+# Инициализация БД (теперь с проверкой)
 def init_db():
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS user_data (
-            user_id INTEGER,
-            data TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    conn.commit()
-    conn.close()
+    try:
+        conn = sqlite3.connect("database.db", check_same_thread=False)
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS user_notes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                text TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+        print("✅ База данных готова!")
+    except Exception as e:
+        print(f"❌ Ошибка при создании БД: {e}")
+    finally:
+        conn.close()
 
-# Обработчик /start - устанавливает кнопку Mini App
+# Команда /start
 @dp.message(Command("start"))
 async def start(message: types.Message):
-    await bot.set_chat_menu_button(
-        chat_id=message.chat.id,
-        menu_button=MenuButtonWebApp(
-            text="Open Mini App",
-            web_app=WebAppInfo(url="https://colddusssh.github.io/bam/")  # Замените на ваш URL
+    try:
+        await bot.set_chat_menu_button(
+            chat_id=message.chat.id,
+            menu_button=MenuButtonWebApp(
+                text="📝 Добавить заметку",
+                web_app=WebAppInfo(url="https://colddusssh.github.io/bam/")  # Замените URL!
+            )
         )
-    )
-    await message.answer("Нажмите кнопку ниже, чтобы открыть Mini App!")
+        await message.answer("Нажмите кнопку ниже, чтобы открыть Mini App!")
+    except Exception as e:
+        await message.answer(f"Ошибка: {e}")
 
-# Обработчик данных из Mini App
+# Обработка данных из Mini App
 @dp.message(F.web_app_data)
 async def handle_web_app_data(message: types.Message):
-    user_id = message.from_user.id
-    data = message.web_app_data.data  # Данные в формате JSON
-    
-    # Сохраняем в SQLite
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO user_data (user_id, data) VALUES (?, ?)", (user_id, data))
-    conn.commit()
-    conn.close()
-    
-    await message.answer(f"✅ Данные сохранены: {data}")
+    try:
+        user_id = message.from_user.id
+        text = message.web_app_data.data
+        
+        conn = sqlite3.connect("database.db", check_same_thread=False)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO user_notes (user_id, text) VALUES (?, ?)",
+            (user_id, text)
+        )
+        conn.commit()
+        
+        # Проверяем запись
+        cursor.execute(
+            "SELECT text, created_at FROM user_notes WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+            (user_id,)
+        )
+        last_note = cursor.fetchone()
+        conn.close()
+        
+        if last_note:
+            await message.answer(
+                f"✅ Заметка сохранена!\n"
+                f"📄 Текст: {last_note[0]}\n"
+                f"⏰ Время: {last_note[1]}"
+            )
+        else:
+            await message.answer("❌ Не удалось сохранить заметку.")
+    except Exception as e:
+        await message.answer(f"Ошибка при сохранении: {e}")
 
-# Запуск бота
+# Запуск
 async def main():
-    init_db()  # Инициализация БД
-    await dp.start_polling(bot)
+    init_db()
+    await dp.start_polling(bot, skip_updates=True)
 
 if __name__ == "__main__":
     asyncio.run(main())
